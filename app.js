@@ -1,8 +1,8 @@
-import express from 'express';
-import logger from 'morgan';
-import cors from 'cors';
+import express from 'express'
+import logger from 'morgan'
+import cors from 'cors'
 
-import contactsRouter from './routes/api/contacts';
+import contactsRouter from './routes/api/contacts'
 
 const app = express()
 
