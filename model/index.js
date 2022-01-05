@@ -1,13 +1,16 @@
 import fs from 'fs'
 import path from 'path'
 import { randomUUID } from "crypto"
-import contacts from './contacts.json'
+// import contacts from './contacts.json'
 import { fileURLToPath } from 'url'
+import { json } from 'express'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const contacts = await listContacts();
-const listContacts = async () => {
+const contactsPath = path.join(__dirname, './contacts.json');
 
+const listContacts = async () => {
+  const data = await fs.readFile(contactsPath)
+  const contacts = JSON.parse(data)
   return contacts
 }
 
