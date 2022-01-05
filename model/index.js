@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import randomUUID from 'crypto'
+import { randomUUID } from "crypto"
 import contacts from './contacts.json'
 import { fileURLToPath } from 'url'
 
@@ -11,12 +11,12 @@ const listContacts = async () => {
 }
 
 const getContactById = async (contactId) => {
-  const [contact] = contacts.filter((contact) => contact.id === contactId)
+  const [contact] = contacts.find(contact => contact.id === contactId)
   return contact
 }
 
 const removeContact = async (contactId) => {
-  const index = contacts.findIndex((contact) => contact.id === contactId)
+  const index = contacts.findIndex(contact => contact.id === contactId)
   if (index !== -1) {
     const [result] = contacts.splice(index, 1)
     await fs.writeFile(
@@ -35,11 +35,11 @@ const addContact = async ({ name, email, phone }) => {
     path.join(__dirname, 'contacts.json'),
     JSON.stringify(contacts, null, 2),
   )
-  return newContact
+  return newContact 
 }
 
 const updateContact = async (contactId, body) => {
-  const index = contacts.findIndex((contact) => contact.id === contactId)
+  const index = contacts.findIndex(contact => contact.id === contactId)
   if (index !== -1) {
     const updatedContact = { id: contactId, ...contacts[index], ...body }
     contacts[index] = updatedContact
