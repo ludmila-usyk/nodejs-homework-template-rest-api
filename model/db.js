@@ -18,7 +18,6 @@ mongoose.connection.on('connected', () => {
     console.log("Database connection successful")
 })
 
-
 process.on('SIGINT', async () => {
     mongoose.connection.close(() => {
         console.log('Connection to DB closed and app terminated')
