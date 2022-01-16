@@ -28,13 +28,12 @@ const getContactById = async (req, res, next) => {
           contact,
         },
       });
-    } else {
+    }
       return res.status(404).json({
         status: 'error',
         code: 404,
         data: 'Not Found',
       });
-    }
   } catch (error) {
     next(error);
   }

@@ -2,11 +2,11 @@ const Users = require('../model/users');
 const { HttpCode } = require('../helper/constants');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+const SECRET_KEY = process.env.SECRET_KEY;
 
 const reg = async (req, res, next) => {
     const { email } = req.body;
-    const user = await findByEmail(email);
+    const user = await  Users.findByEmail(email);
     if (user) {
         return res.status(HttpCode.CONFLICT).json({
             status: 'error',
@@ -45,7 +45,7 @@ const login = async (req, res, next) => {
     }
 
     const payload = { id: user.id };
-    const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: '2h' });
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2h' });
     await Users.updateToken(user.id, token);
     return res.status(HttpCode.OK).json({
             status: 'success',
