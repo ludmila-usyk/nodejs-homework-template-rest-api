@@ -1,53 +1,45 @@
-const express = require('express');
-const logger = require('morgan');
-const cors = require('cors');
-const helmet = require('helmet');
-const boolParser = require('express-query-boolean');
-const rateLimit = require("express-rate-limit");
+const express = require("express");
+const logger = require("morgan");
+const cors = require("cors");
 
-const contactsRouter = require('./routes/contacts');
-const usersRouter = require('./routes/users');
+const {
+  VARIABLES_ENV: { FOLDER_AVATARS },
+  HttpCode,
+} = require("./utils");
+
+const { authRouter, contactsRouter } = require("./routes/api");
 
 const app = express();
 
-const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
+const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 
-app.use(helmet());
 app.use(logger(formatsLogger));
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 3, // limit each IP to 100 requests per windowMs
-  handler: (req, res, next) => {
-    return res.status(429).json({
-      status: 'error',
-      code: 429,
-      message: 'Too Many Requests',
-    })
-  },
+// folder for static
+app.use(express.static(FOLDER_AVATARS));
+app.use(cors());
+app.use(express.json()); // body parser
+app.use((req, res, next) => {
+  app.set("lang", req.acceptsLanguages(["en", "ru"]));
+  next();
 });
 
-app.use(limiter);
-app.use(cors(
-  {
-  "origin": "*",
-  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE, OPTIONS",
-  "preflightContinue": false,
-  "optionsSuccessStatus": 204
-}
-))
-app.use(express.json());
-app.use(boolParser());
+// routes
+app.use("/api/users", authRouter);
+app.use("/api/contacts", contactsRouter);
 
-app.use('/api/users', usersRouter)
-app.use('/api/contacts', contactsRouter)
+// page not found
+app.use((req, res) => {
+  res
+    .status(HttpCode.NOT_FOUND)
+    .json({ status: "error", code: HttpCode.NOT_FOUND, message: "Not found" });
+});
 
-app.use(( req, res) => {
-    res.status(404).json({ message: 'Not Found'})
-})
+app.use((err, _req, res, _next) => {
+  res.status(HttpCode.INTERNAL_SERVER_ERROR).json({
+    status: "fail",
+    code: HttpCode.INTERNAL_SERVER_ERROR,
+    message: err.message,
+  });
+});
 
-app.use((err, req, res, next) => {
-  res.status(500).json({message: err.message})
-})
-
-module.exports = app
+module.exports = app;
