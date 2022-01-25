@@ -1,13 +1,9 @@
-const { HttpCode } = require("../../utils");
-const { AuthService } = require("../../service");
+const { User } = require('../../schemas')
 
-const logout = async (req, res, next) => {
-  await AuthService.setToken(req.user.id, null);
-  return res.status(HttpCode.NO_CONTENT).json({
-    status: "success",
-    code: HttpCode.NO_CONTENT,
-    message: "You are logout successfully",
-  });
-};
+const logout = async (req, res) => {
+  const { _id } = req.user
+  await User.findByIdAndUpdate(_id, { token: null })
+  res.status(204).json()
+}
 
-module.exports = logout;
+module.exports = logout

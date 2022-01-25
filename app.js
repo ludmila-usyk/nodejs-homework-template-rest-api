@@ -1,45 +1,32 @@
-const express = require("express");
-const logger = require("morgan");
-const cors = require("cors");
+const express = require('express')
+const logger = require('morgan')
+const cors = require('cors')
+require('dotenv').config()
 
-const {
-  VARIABLES_ENV: { FOLDER_AVATARS },
-  HttpCode,
-} = require("./utils");
+const authRouter = require('./routes/api/auth')
+const usersRouter = require('./routes/api/users')
+const contactsRouter = require('./routes/api/contacts')
 
-const { authRouter, contactsRouter } = require("./routes/api");
+const app = express()
 
-const app = express();
+const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
-const formatsLogger = app.get("env") === "development" ? "dev" : "short";
+app.use(logger(formatsLogger))
+app.use(cors())
+app.use(express.json())
+app.use(express.static('public'))
 
-app.use(logger(formatsLogger));
-// folder for static
-app.use(express.static(FOLDER_AVATARS));
-app.use(cors());
-app.use(express.json()); // body parser
-app.use((req, res, next) => {
-  app.set("lang", req.acceptsLanguages(["en", "ru"]));
-  next();
-});
+app.use('/api/auth', authRouter)
+app.use('/api/users', usersRouter)
+app.use('/api/contacts', contactsRouter)
 
-// routes
-app.use("/api/users", authRouter);
-app.use("/api/contacts", contactsRouter);
+app.use((_, res) => {
+  res.status(404).json({ message: 'Not found' })
+})
 
-// page not found
-app.use((req, res) => {
-  res
-    .status(HttpCode.NOT_FOUND)
-    .json({ status: "error", code: HttpCode.NOT_FOUND, message: "Not found" });
-});
+app.use((err, req, res, next) => {
+  const { status = 500, message = 'Server error' } = err
+  res.status(status).json({ message })
+})
 
-app.use((err, _req, res, _next) => {
-  res.status(HttpCode.INTERNAL_SERVER_ERROR).json({
-    status: "fail",
-    code: HttpCode.INTERNAL_SERVER_ERROR,
-    message: err.message,
-  });
-});
-
-module.exports = app;
+module.exports = app

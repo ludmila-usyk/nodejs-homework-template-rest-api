@@ -1,3 +1,3 @@
-const colors = require("./colors");
+const sendEmail = require('./sendEmail')
 
-module.exports = { colors };
+module.exports = { sendEmail }

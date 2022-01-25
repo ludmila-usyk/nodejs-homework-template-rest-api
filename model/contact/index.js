@@ -1,3 +1,1 @@
-const Contact = require("./contact-model");
-
-module.exports = Contact;
+// module.exports = contactsOperations;

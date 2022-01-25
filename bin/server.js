@@ -1,17 +1,17 @@
-const app = require("../app");
-const db = require("../config");
-const { mkdir } = require("fs/promises");
-require("../helpers");
+const mongoose = require('mongoose')
+require('dotenv').config()
 
-const {
-  VARIABLES_ENV: { PORT = 3001, UPLOAD_DIR },
-} = require("../utils");
+const app = require('../app')
 
-db.then(() => {
-  app.listen(PORT, async () => {
-    await mkdir(UPLOAD_DIR, { recursive: true });
-    console.log(`Server running. API port: ${PORT}`.brightBlue.bold);
-  });
-}).catch((err) => {
-  console.log(`Server not running.Error: ${err.message}`.red.bold);
-});
+const { DB_HOST, PORT = 3000 } = process.env
+
+mongoose.connect(DB_HOST, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  app.listen(PORT)
+  console.log('Database connection successful')
+}).catch(error => {
+  console.log(error.message)
+  process.exit(1)
+})
