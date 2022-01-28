@@ -7,7 +7,7 @@ const updateSubscription = async(req, res) => {
   if (!subscription) {
     throw new BadRequest('Missing field subscription')
   }
-  if (subscription !== 'starter' && subscription !== 'pro' && subscription !== 'business') {
+  if (!['starter', 'pro', 'business'].includes(subscription)) {
     throw new BadRequest('Wrong field subscription')
   }
   const result = await User.findByIdAndUpdate(_id, { subscription }, { new: true })

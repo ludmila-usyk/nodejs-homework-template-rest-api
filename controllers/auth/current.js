@@ -1,18 +1,15 @@
-const { User } = require('../../schemas')
 const { Unauthorized } = require('http-errors')
 
-const current = async(req, res) => {
-  const { _id } = req.user
-  const user = await User.findById(_id, 'email subscription')
-  if (!user) {
-    throw new Unauthorized('Not authorized')
-  }
+const current = async(req, res, next) => {
+  const currentUser = req.user
+
   res.status(200).json({
     status: 'success',
     code: 200,
     data: {
-      user
-    }
+      email: currentUser.email,
+      subscription: currentUser.role,
+    },
   })
 }
 module.exports = current

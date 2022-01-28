@@ -1,4 +1,3 @@
-const getAll = require('./getAll');
 const updateContacts = require('./updateContacts');
 
 const updateContactById = async (id, data) => {

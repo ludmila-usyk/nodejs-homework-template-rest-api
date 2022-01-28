@@ -7,7 +7,7 @@ const { SECRET_KEY } = process.env
 
 const login = async (req, res) => {
   const { email, password } = req.body
-  if (email === null || password === null) {
+ {
     res.status(400).json({
       status: 'Bad Request',
       code: 400,

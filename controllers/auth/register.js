@@ -6,7 +6,7 @@ const { User } = require('../../schemas')
 const { sendEmail } = require('../../helpers')
 
 const register = async (req, res) => {
-  if (req.body.email === null || req.body.password === null) {
+  if (req.body.email === null) {
     res.status(400).json({
       status: 'Bad Request',
       code: 400,
@@ -20,6 +20,7 @@ const register = async (req, res) => {
   if (user) {
     throw new Conflict('Email in use')
   }
+
   const avatarURL = gravatar.url(email)
   const verificationToken = nanoid()
 
@@ -33,7 +34,7 @@ const register = async (req, res) => {
     subject: 'Registration confirm',
     html: `<a href = "http://localhost:3000/api/users/verify/${verificationToken}">Click it to confirm a registration</a>`
   }
-  sendEmail(registrationMail)
+  await sendEmail(registrationMail)
 
   res.status(201).json({
     status: 'success',

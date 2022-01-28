@@ -1,5 +1,3 @@
-const getAll = require('./getAll');
-
 const getById = async (id) => {
   const contacts = await getAll();
   const idx = contacts.findIndex(item => item.id === id);

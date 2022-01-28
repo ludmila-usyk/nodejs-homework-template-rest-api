@@ -4,6 +4,7 @@ const listContacts = async (req, res, next) => {
   const { page = 1, limit = 5, favorite = true } = req.query
   const skip = (page - 1) * limit
   const { _id } = req.user
+  Number.isNaN(skip)
   const contacts = await Contact.find({ owner: _id, favorite }, '_id name phone owner', { skip, limit: +limit }).populate('owner', 'email')
   res.json({
     status: 'success',
@@ -16,7 +17,8 @@ const listContacts = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
   const { contactId } = req.params
-  const contact = await Contact.findById(contactId)
+  const { contactId: userId } = req.user
+  const contact = await Contact.findById(contactId, userId)
   if (!contact) {
     res.status(404).json({
       status: 'error',
@@ -48,7 +50,8 @@ const add = async (req, res, next) => {
 
 const updateById = async (req, res, next) => {
   const { contactId } = req.params
-  const result = await Contact.findByIdAndUpdate(contactId, req.body)
+  const { contactId: userId } = req.user
+  const result = await Contact.findByIdAndUpdate(contactId, userId, req.body)
   if (!result) {
     res.status(404).json({
       status: 'error',
@@ -66,7 +69,8 @@ const updateById = async (req, res, next) => {
 
 const removeById = async (req, res, next) => {
   const { contactId } = req.params
-  const contact = await Contact.findByIdAndRemove(contactId)
+  const { contactId: userId } = req.user
+  const contact = await Contact.findByIdAndRemove(contactId, userId)
   if (!contact) {
     res.status(404).json({
       status: 'error',
@@ -93,6 +97,7 @@ const updateStatusContactById = async (req, res) => {
   }
   const { contactId } = req.params
   const result = await Contact.findByIdAndUpdate(contactId, req.body)
+
   if (!result) {
     res.status(404).json({
       status: 'error',

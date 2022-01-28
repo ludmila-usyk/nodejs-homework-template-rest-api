@@ -28,9 +28,9 @@ const verifyAgain = async(req, res) => {
   const registrationMail = {
     to: email,
     subject: 'Registration confirm',
-    html: `<a href = "http://localhost:3000/api/users/verify/${user.verificationToken}">Click it to confirm a registration</a>`
+    html: `<a target="_blank" href = "http://localhost:3000/api/users/verify/${user.verificationToken}">Click it to confirm a registration</a>`
   }
-  sendEmail(registrationMail)
+  await sendEmail(registrationMail)
 
   res.json({
     status: 'success',
